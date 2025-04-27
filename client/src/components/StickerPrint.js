@@ -55,7 +55,7 @@ const StickerPrint = () => {
 
   const handlePrint = async () => {
     try {
-      const response = await axios.post('http://127.0.0.1:5000/limit/update', {
+      const response = await axios.post('https://warranty-app-ei1t.onrender.com/limit/update', {
         companyName,
         upperLimit,
       });
