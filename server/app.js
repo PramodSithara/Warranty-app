@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 main().catch(err => console.log(err));
 
 async function main(){
-  await mongoose.connect(process.env.MONGOURL);
+  await mongoose.connect('mongodb+srv://pramodsithara9999:wdu7PHPRM3ugG3QG@cluster1.nqrfsry.mongodb.net/warranty-app?retryWrites=true&w=majority&appName=Cluster1');
 }
 
 app.use('/users', usersRouter);
