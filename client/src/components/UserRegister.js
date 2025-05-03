@@ -1,39 +1,31 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Login = () => {
+const UserRegister = () => {
+  const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
+  const [role, setRole] = useState('user');
   const [userPassword, setuserPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://127.0.0.1:5000/users/signin', {
-        email,
-        userPassword
-      });
-      if (response){
-        const userRole = response.data.role;
-        localStorage.setItem('token', response.data.token);
-        if(userRole === 'admin'){
-          navigate('/panel');
-        }else{
-          navigate('/generator');
+        const userResponse = await axios.post('http://127.0.0.1:5000/users/signup', {
+            userName,
+            email,
+            userPassword,
+            role
+        });
+        if(userResponse){
+          alert('User Created Successfully');
+          window.location.reload();
         }
+      } catch (error) {
+        setError(error.response.data.message)
       }
-      setError('');
-    } catch (error) {
-      const message =
-        error.response && error.response.data
-          ? error.response.data.message || error.response.data
-          : 'Login failed. Please try again.';
-      setError(message);
-      console.error('Login error:', message);
-    }
-  };
+    };
+  
 
   const styles = {
     container: {
@@ -73,6 +65,7 @@ const Login = () => {
       border: '1px solid #ccc',
       borderRadius: '8px',
       outline: 'none',
+      transition: 'border-color 0.3s',
     },
     button: {
       padding: '12px',
@@ -84,6 +77,7 @@ const Login = () => {
       cursor: 'pointer',
       borderRadius: '8px',
       marginTop: '10px',
+      transition: 'background-color 0.3s',
     },
     linkText: {
       textAlign: 'center',
@@ -114,45 +108,78 @@ const Login = () => {
       <div style={styles.printHeader}>
         <h2 style={styles.company}>E-ZONE Technologies (Pvt).Ltd</h2>
       </div>
-      <h2 style={styles.title}>Login</h2>
+      <h2 style={styles.title}>User Register</h2>
       <form onSubmit={handleSubmit} style={styles.form}>
-       
         <div style={styles.formGroup}>
-          <label htmlFor="email" style={styles.label}>Email</label>
+          <label htmlFor="userName" style={styles.label}>
+            User Name
+          </label>
+          <input
+            type="text"
+            id="username"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            required
+            placeholder="Enter user Name"
+            style={styles.input}
+          />
+        </div>
+
+        <div style={styles.formGroup}>
+          <label htmlFor="email" style={styles.label}>
+            Email
+          </label>
           <input
             type="email"
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            placeholder="Enter your email"
+            placeholder="Enter user Email"
             style={styles.input}
           />
         </div>
 
         <div style={styles.formGroup}>
-          <label htmlFor="password" style={styles.label}>Password</label>
+          <label htmlFor="role" style={styles.label}>
+            User Role
+          </label>
+          <select
+            id="role"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            style={styles.input}
+            required
+          >
+            <option  value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <div style={styles.formGroup}>
+          <label htmlFor="password" style={styles.label}>
+            User Password
+          </label>
           <input
             type="password"
             id="password"
             value={userPassword}
             onChange={(e) => setuserPassword(e.target.value)}
             required
-            placeholder="Enter your Password"
+            placeholder="Enter user Password"
             style={styles.input}
           />
         </div>
-
-        <button type="submit" style={styles.button}>Login</button>
+        {error && (
+          <p style={{ color: 'red', marginTop: '15px', textAlign: 'center' }}>
+            {error}
+          </p>
+        )}
+        <button type="submit" style={styles.button}>
+          Register
+        </button>
       </form>
-
-      {error && (
-        <p style={{ color: 'red', marginTop: '15px', textAlign: 'center' }}>
-          {error}
-        </p>
-      )}
     </div>
   );
 };
-
-export default Login;
+export default UserRegister;

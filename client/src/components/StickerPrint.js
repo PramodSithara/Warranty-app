@@ -1,123 +1,129 @@
 import React, { useState, useEffect } from 'react';
 import '../style.css';
-import { useLocation } from 'react-router-dom';
-import WarrantySticker from './WarrantySticker'
+import WarrantySticker from './WarrantySticker';
 import axios from 'axios';
+import '../panel.css';
 
 const StickerPrint = () => {
-  const location = useLocation();
   const [serials, setSerials] = useState([]);
   const [lowerLimit, setLowerLimit] = useState(0);
-  const [upperLimit, setUpperLimit] = useState(0); 
   const [brand, setBrand] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [companiesData, setCompaniesData] = useState([]);
   const [error, setError] = useState('');
   const [amount, setAmount] = useState(0);
 
-  const { companyName, upLimit, brandName} = location.state || {};
-  
   useEffect(() => {
-    if (upLimit !== undefined) {
-      setLowerLimit(upLimit);
+    axios.get('http://127.0.0.1:5000/customer/fetch')
+      .then((response) => {
+        setCompaniesData(response.data);
+      })
+      .catch((err) => {
+        console.error('Error fetching companies:', err);
+      });
+  }, []);
+
+  useEffect(() => {
+    const selectedCompany = companiesData.find(c => c.companyName === companyName);
+    if (selectedCompany) {
+      setBrand(selectedCompany.brandName);
+      setLowerLimit(parseInt(selectedCompany.upperLimit) || 0); 
     }
-    if (brandName) {
-      setBrand(brandName);
-    }
-  }, [upLimit, brandName]);
- 
+  }, [companyName, companiesData]);
 
   const generateSerials = () => {
-    const serialsSet = new Set();
+    const lower = parseInt(lowerLimit);
+    const amt = parseInt(amount);
 
-    if (lowerLimit.toString().length !== 6 || upperLimit.toString().length !== 6) {
-      setError('Both limits must be exactly six digits.');
+    if (isNaN(lower) || isNaN(amt)) {
+      setError('Lower limit and amount must be valid numbers.');
       return [];
     }
-    
-    if (lowerLimit >= upperLimit) {
-      setError("The lower limit must be less than the upper limit.");
+
+    if (amt <= 0) {
+      setError("Amount must be greater than 0.");
       return [];
     }
 
     setError('');
-
-    while (serialsSet.size < amount) {
-      const randomValue = Math.floor(Math.random() * (upperLimit - lowerLimit + 1)) + lowerLimit;
-      serialsSet.add(randomValue); 
+    const serials = [];
+    for (let i = 0; i < amt; i++) {
+      serials.push((lower + i).toString().padStart(6, '0'));
     }
 
-    return Array.from(serialsSet); 
+    return serials;
   };
 
   const handleGenerate = () => {
-    setSerials(generateSerials());
+    const generated = generateSerials();
+    setSerials(generated);
   };
-
 
   const handlePrint = async () => {
     try {
-      const response = await axios.post('https://warranty-app-ei1t.onrender.com/limit/update', {
+      const newUpperLimit = lowerLimit + amount;
+      const response = await axios.put('http://127.0.0.1:5000/customer/update', {
         companyName,
-        upperLimit,
+        upperLimit: newUpperLimit
       });
-
       console.log('Data sent successfully:', response.data);
-
       window.print();
+      window.location.reload();
     } catch (error) {
       console.error('Error sending data to backend:', error.response?.data || error.message);
     }
   };
 
-
   return (
     <div className="wrapper">
+      <div className="print-header">
+        <h2>E-ZONE Technologies (Pvt).Ltd</h2>
+      </div>
+
       <div className="range-inputs">
-        <div className='lower-limit'>
-          <label>Min Limit</label>
-          <input
-            className='text-input'
-            type="number"
-            value={lowerLimit}
-            onChange={(e) => setLowerLimit(parseInt(e.target.value, 10))}
-            placeholder="Lower Limit"
-          />
-        </div>
-        <div className='upper-limit'>
-          <label>Max Limit</label>
-          <input
-            className='text-input'
-            type="number"
-            value={upperLimit}
-            onChange={(e) => setUpperLimit(parseInt(e.target.value, 10))}
-            placeholder="Upper Limit"
-          />
-        </div>
-        <div className='upper-limit'>
+        <div className="upper-limit">
           <label>Company</label>
-          <input
-            className='text-input'
-            type="text"
+          <select
+            className="text-input"
             value={companyName}
-            disabled
-          />
+            onChange={(e) => setCompanyName(e.target.value)}
+          >
+            <option value="">-- Select Company --</option>
+            {companiesData.map((company) => (
+              <option key={company.id} value={company.companyName}>
+                {company.companyName}
+              </option>
+            ))}
+          </select>
         </div>
-        <div className='upper-limit'>
+
+        <div className="upper-limit">
           <label>Brand Name</label>
           <input
-            className='text-input'
+            className="text-input"
             type="text"
             value={brand}
             onChange={(e) => setBrand(e.target.value)}
-            required
           />
         </div>
-        <div className='upper-limit'>
+
+        <div className="lower-limit">
+          <label>Min Limit</label>
+          <input
+            className="text-input"
+            type="text"
+            value={lowerLimit.toString().padStart(6, '0')}
+            disabled
+          />
+        </div>
+
+        <div className="upper-limit">
           <label>Sticker Amount</label>
           <input
-            className='text-input'
-            type="text"
+            className="text-input"
+            type="number"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={(e) => setAmount(parseInt(e.target.value, 10))}
             required
           />
         </div>
@@ -125,7 +131,7 @@ const StickerPrint = () => {
 
       {error && <div className="error-message">{error}</div>}
 
-      <div className='buttons'>
+      <div className="buttons">
         <button className="generate-btn" onClick={handleGenerate}>
           Generate Serial Numbers
         </button>
@@ -133,14 +139,13 @@ const StickerPrint = () => {
           Print Stickers
         </button>
       </div>
-      
+
       <div className="grid">
         {serials.map((serial, index) => (
-          <WarrantySticker key={index} serialNumber={serial} brandName={brand}/>
+          <WarrantySticker key={index} serialNumber={serial} brandName={brand} />
         ))}
       </div>
     </div>
-    
   );
 };
 

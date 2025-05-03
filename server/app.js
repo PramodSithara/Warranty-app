@@ -8,7 +8,7 @@ var cors = require('cors')
 require('dotenv').config();
 
 var usersRouter = require('./routes/users');
-var limitRoute = require('./routes/limitRoute');
+var customerRoute = require('./routes/customers');
 
 var app = express();
 app.use(cors())
@@ -28,11 +28,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 main().catch(err => console.log(err));
 
 async function main(){
-  await mongoose.connect('mongodb+srv://pramodsithara9999:wdu7PHPRM3ugG3QG@cluster1.nqrfsry.mongodb.net/warranty-app?retryWrites=true&w=majority&appName=Cluster1');
+  await mongoose.connect(process.env.MONGOURL);
 }
 
 app.use('/users', usersRouter);
-app.use('/limit', limitRoute);
+app.use('/customer', customerRoute);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

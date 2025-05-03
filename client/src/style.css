@@ -1,11 +1,11 @@
 /*CSS for sticker */
 .sticker {
-    border: 1px solid green;
+    border: 1px solid rgb(0, 0, 0);
     width: 240px;
     height: 125px;
     padding: 8px;
     font-size: 10px;
-    color: green;
+    color: rgb(0, 0, 0);
     font-family: monospace;
     display: flex;
     flex-direction: column;
@@ -191,10 +191,6 @@
 }
 
 
-
-
-/* CSS for genarator */
-
 .range-inputs {
     display: flex;
     flex-direction: column;
@@ -234,27 +230,51 @@ label {
     color: red;
 }
 
-@media print {
-    body {
-        margin: 0;
-        padding: 0;
-    }
-
-    button,
-    .print-btn {
+/*Print CSS*/ 
+/* @media print {
+    .print-header{
         display: none;
     }
 
-    div {
-        break-inside: avoid;
+    body {
+      margin: 0;
+      padding: 0;
+    }
+  
+    .range-inputs,
+    .buttons,
+    .text-input,
+    label,
+    .error-message {
+      display: none !important;
+    }
+  
+    .wrapper {
+      margin: 0;
+      padding: 0;
+    }
+  
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10mm;
+      margin: 0;
+      padding: 0;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+  
+    .grid > * {
+      break-inside: avoid;
+      page-break-inside: avoid;
     }
 
     @page {
-        size: A4;
-        margin: 10mm;
+      size: A4;
+      margin: 10mm;
     }
-}
-
+  } */
+  
 .wrapper {
     width: 100%;
     max-width: 1024px;
@@ -286,8 +306,7 @@ label {
 }
 
 .text-input {
-    padding: 10px;
-    font-size: 18px;
+    font-size: 16px;
     border-radius: 5px;
     border: 1px solid #ddd;
     width: 200px;
@@ -340,6 +359,18 @@ button {
 
 .print-btn:hover {
     background-color: #0056b3;
+}
+
+.print-header {
+    color: #0000ffbd;
+    text-align: center;
+    margin-bottom: 20mm;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+h2{
+    margin-top: 0;
 }
 
 @media (max-width: 600px) {

@@ -1,0 +1,62 @@
+@media print {
+  .print-header{
+    display: none !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  .main-panel {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .range-inputs,
+  .buttons,
+  .text-input,
+  label,
+  .error-message {
+    display: none !important;
+  }
+
+  .wrapper {
+    margin: 0;
+    padding: 0;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10mm;
+    margin: 0;
+    padding: 0;
+  }
+
+  .grid > * {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    display: block;
+    margin-bottom: 10mm;
+  }
+
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
+  .sticker {
+    width: 100%;
+    height: auto;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    display: inline-block;
+  }
+}
