@@ -28,7 +28,6 @@ function App() {
     return () => clearInterval(titleInterval);
   }, []);
 
-
   return (
     <BrowserRouter>
       <Routes>
