@@ -11,7 +11,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        const customerResponse = await axios.post('http://127.0.0.1:5000/customer/signup', {
+        const customerResponse = await axios.post('https://warranty-app-ei1t.onrender.com/customer/signup', {
           customerName,
           companyName,
           email,
