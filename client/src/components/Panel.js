@@ -20,7 +20,7 @@ const Panel = () => {
         navigate('/404');
       }
       try {
-        const response = await axios.get('http://127.0.0.1:5000/users/profile', {
+        const response = await axios.get('https://warranty-app-ei1t.onrender.com/users/profile', {
           headers: {
             Authorization: `Bearer ${token}`
           }
